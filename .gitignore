@@ -1,28 +1,27 @@
-TAGS
-*.swp
-*~
-*.o
-*.log
+# VCS build artifacts
+csrc/
+simv
+simv.daidir/
+simv.vdb/
+ucli.key
+vc_hdrs.h
+
+# Waveform files
 *.vcd
-*.xml
-*.dbg
-*.wlf
-*.elf
-*.hex
-*.map
-*.out
-*.json
-.build-rtl
-.lib-rtl
-.opt-rtl
-/build
-/Bender.lock
-/Bender.local
-golden_reference_design
-ref_design
-golden.src
-revised.src
-cadence_conformal
-synopsys_formality
-questa_autocheck
-reports
+*.vpd
+*.fsdb
+
+# Log files
+*.log
+transcript
+
+# Coverage databases
+*.vdb/
+urgReport/
+
+# Other simulation artifacts
+*.key
+*.dat
+DVEfiles/
+verdiLog/
+novas.*
