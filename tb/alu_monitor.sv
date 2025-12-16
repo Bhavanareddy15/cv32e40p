@@ -101,6 +101,11 @@ class alu_monitor extends uvm_monitor;
   endgroup
 
   covergroup cg_bmask;
+    cp_bmask_op: coverpoint vif.mon_cb.operator {
+      bins bitman[] = {cv32e40p_pkg::ALU_BEXT, cv32e40p_pkg::ALU_BEXTU,
+                       cv32e40p_pkg::ALU_BINS, cv32e40p_pkg::ALU_BCLR,
+                       cv32e40p_pkg::ALU_BSET, cv32e40p_pkg::ALU_BREV};
+    }
     cp_bmask_a: coverpoint vif.mon_cb.bmask_a {
       bins single   = {5'd0};
       bins byte_w   = {5'd7};
@@ -119,6 +124,10 @@ class alu_monitor extends uvm_monitor;
   endgroup
 
   covergroup cg_division;
+    cp_div_op: coverpoint vif.mon_cb.operator {
+      bins div_ops[] = {cv32e40p_pkg::ALU_DIV, cv32e40p_pkg::ALU_DIVU,
+                        cv32e40p_pkg::ALU_REM, cv32e40p_pkg::ALU_REMU};
+    }
     cp_divisor: coverpoint vif.mon_cb.operand_b {
       bins zero     = {32'h00000000};
       bins one      = {32'h00000001};
@@ -315,8 +324,8 @@ class alu_monitor extends uvm_monitor;
     report_str = {report_str, $sformatf("  Operand Range Coverage: %6.2f%%\n", cg_operand_ranges.get_coverage())};
     report_str = {report_str, $sformatf("  Vector Mode Coverage:   %6.2f%%\n", cg_vector_mode.get_coverage())};
     report_str = {report_str, $sformatf("  Shift Amount Coverage:  %6.2f%%\n", cg_shift_amount.get_coverage())};
-    report_str = {report_str, $sformatf("  Bmask Coverage:         %6.2f%%\n", cg_bmask.get_coverage())};
-    report_str = {report_str, $sformatf("  Division Coverage:      %6.2f%%\n", cg_division.get_coverage())};
+    report_str = {report_str, $sformatf("  Bmask Coverage:         %6.2f%% (%0d/6 opcodes)\n", cg_bmask.cp_bmask_op.get_coverage(), bitman_hit.size())};
+    report_str = {report_str, $sformatf("  Division Coverage:      %6.2f%% (%0d/4 opcodes)\n", cg_division.cp_div_op.get_coverage(), div_hit.size())};
     report_str = {report_str, $sformatf("  CLPX Coverage:          %6.2f%%\n", cg_clpx.get_coverage())};
     report_str = {report_str, $sformatf("  Op x Vec Cross Cov:     %6.2f%%\n\n", cg_cross_op_vec.get_coverage())};
 
@@ -475,8 +484,25 @@ class alu_monitor extends uvm_monitor;
     report_str = {report_str, $sformatf("  high (24-30):  %s\n\n",
                   cg_shift_amount.cp_shift_amt.get_coverage("high") > 0 ? "HIT" : "MISS")};
 
+    // Bmask Opcode Details
+    report_str = {report_str, "--- BMASK OPCODE COVERAGE ---\n"};
+    report_str = {report_str, $sformatf("  Opcodes (%0d/6): ", bitman_hit.size())};
+    report_str = {report_str, bitman_hit.exists(cv32e40p_pkg::ALU_BEXT) ? "BEXT " : ""};
+    report_str = {report_str, bitman_hit.exists(cv32e40p_pkg::ALU_BEXTU) ? "BEXTU " : ""};
+    report_str = {report_str, bitman_hit.exists(cv32e40p_pkg::ALU_BINS) ? "BINS " : ""};
+    report_str = {report_str, bitman_hit.exists(cv32e40p_pkg::ALU_BCLR) ? "BCLR " : ""};
+    report_str = {report_str, bitman_hit.exists(cv32e40p_pkg::ALU_BSET) ? "BSET " : ""};
+    report_str = {report_str, bitman_hit.exists(cv32e40p_pkg::ALU_BREV) ? "BREV " : ""};
+    report_str = {report_str, "\n\n"};
+
     // Division Details
     report_str = {report_str, "--- DIVISION COVERAGE ---\n"};
+    report_str = {report_str, $sformatf("  Opcodes (%0d/4): ", div_hit.size())};
+    report_str = {report_str, div_hit.exists(cv32e40p_pkg::ALU_DIV) ? "DIV " : ""};
+    report_str = {report_str, div_hit.exists(cv32e40p_pkg::ALU_DIVU) ? "DIVU " : ""};
+    report_str = {report_str, div_hit.exists(cv32e40p_pkg::ALU_REM) ? "REM " : ""};
+    report_str = {report_str, div_hit.exists(cv32e40p_pkg::ALU_REMU) ? "REMU " : ""};
+    report_str = {report_str, "\n"};
     report_str = {report_str, $sformatf("  Divisor zero:    %s\n",
                   cg_division.cp_divisor.get_coverage("zero") > 0 ? "HIT" : "MISS")};
     report_str = {report_str, $sformatf("  Divisor one:     %s\n",

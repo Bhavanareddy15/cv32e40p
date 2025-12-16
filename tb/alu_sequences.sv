@@ -413,7 +413,7 @@ endclass
 class alu_full_coverage_sequence extends uvm_sequence #(alu_seq_item);
   `uvm_object_utils(alu_full_coverage_sequence)
 
-  int unsigned txn_per_op = 100;
+  int unsigned txn_per_op = 1000;
 
   function new(string name = "alu_full_coverage_sequence");
     super.new(name);
